@@ -4,6 +4,7 @@
 ## 基本使用
 
 ```ssh
+
 创建新的项目
 	$ forge init hello_foundry
 	$ forge build
@@ -51,7 +52,7 @@
 Forge 
 	tests, builds, and deploys your smart contracts.
 测试
-	所有测试都是由solidity写的 不是 ethers.js 
+	所有测试都是由 solidity 写的 不是 ethers.js 
 	都放在/test 目录下  文件形式 xx.t.sol
 	可以单独跑一个测试   用过滤词 --match-contract  和  --match-test
 		$ forge test --match-contract ComplicatedContractTest --match-test testDeposit
@@ -74,7 +75,7 @@ Forge
 cheatcodes
 	作弊码能操控区块链的数据  例如改变区块 自己的地址  部署在 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D 
 	通过 vm 实例获取作弊码 
-	testFailXXX 开头的 如果执行合约函数 revert  直接是 passed 
+	testFailXXX 开头的 如果执行合约函数 异常 revert 了  那么测试函数直接是 passed 
 		如果 改成 testXXX  如果 revert 会告诉我们到底发生了什么   例如 revert Unauthorized();
 		但如果要通过  那么 在测试方法最前面添加 vm.expectRevert(Unauthorized.selector); 就直接 passed 
 	expectEmit 针对 事件 Event   最多三个 indexed  构成一个 topic  可以用来在区块链上进行搜索
@@ -144,13 +145,137 @@ Fork Testing
 		可以使用 createFork 创建 fork     都带有 uint256 的  forkId  在创建的时候初始化
 		选择环境: selectFork(forkId)
 		createSelectFork: 就是 先创建fork-createFork  然后选择当前Fork - selectFork 
-		每一刻只能有一个fork处于激活状态  其他的可以通过 activeFork再次激活使用 
+		每一刻只能有一个fork处于激活状态  其他的可以通过 activeFork 再次激活使用 
 		运行原理:
 			每个fork是独立的EVM  使用了独立的storage 唯一不同的就是 msg.sender 和 测试合约本身 
 			测试合约的改动会保持  尽管fork切来切去的 因为 test contract是一个 persistent account
 			persistent account 理解为本地memory  
 			只有 msg.sender 和 test contract  是 persistent 
 			但是其他 account 可以通过 makePersistent 使其成为 persistent  
+		
+		
+Advance Testing
+	Fuzz Testing			瀑布测试  生成很多随机参数去测试
+		和普通测试类似  把参数暴露出来  框架默认生成256个场景数据  scenarios  可以在配置文件里面改 FOUNDRY_FUZZ_RUNS
+		如果要过滤  使用 vm.assume(amout> 0.1 ether);
+		测试报告里面 [PASS] testWithdraw(uint96) (runs: 256, μ: 19078, ~: 19654)    μ是平均数  ~是中位数
+	
+	Invariant Testing  		invariant: never changing 
+		在fuzzing的基础上  函数随机执行  看看合约是否有逻辑错误  
+		俩个维度  runs   depth 
+			runs:  执行的次数 - 多个函数生成执行顺序然后执行    也就是说 先把多个函数生成一个执行顺序  然后执行 例如 abc   acb 不知道有没有重复的
+			depth: 如果一个函数 revert  那么 depth 就会自增 
+		和标准测试方法一样  用前缀表示  function invariant_A() 
+		一个好的 Invariants 应该包含多个函数执行 而且在不同的区块状态下 fuzzing测试也不出错 
+			拿 uniswap 举例  xy=k  所有用户的余额应该等于总供给 
+				assertGe(token.totalAssets(),token.totalSupply())   
+				assertEq(token.totalSupply(),sumBalanceOf)
+				assertEq(pool.outstandingInterest(),test.naiveInterest())
+		带条件的 invariants   不一定每一个都是 true    带有条件 if(protocalCondition) return;  最好用  if(protocalCondition) { assertLe(val1, val2);  return; }
+		Invariant Targets :  可以自定义一些东西 
+			Target Senders      fuzzer 选择随机的地址作为 msg.sender 
+			Target Selectors    特定合约 - 子函数集合 
+			Target Artifacts   用于 代理合约  测试ABI 
+			Target Artifact Selectors  代理合约  
+			优先级 targetSelectors | targetArtifactSelectors > excludeContracts | excludeArtifacts > targetContracts | targetArtifacts
+		测试帮助函数
+			excludeContract(address newExcludedContract_)          添加到 不包含目标合约集合  添加了这个合约不会去执行
+			excludeSender(address newExcludedSender_)	           添加到 不包含 msg.sender 集合
+			excludeArtifact(string memory newExcludedArtifact_)	        ...不包含在artifacts
+			targetArtifact(string memory newTargetedArtifact_)	        ...包含在artifacts
+			targetArtifactSelector(FuzzSelector memory newTargetedArtifactSelector_)	添加到 FuzzSelectors - 用于artifact selectors  - ABI
+			targetContract(address newTargetedContract_)			添加到 包含目标合约集合  添加了这个合约会去执行		
+			targetSelector(FuzzSelector memory newTargetedSelector_)	添加到 FuzzSelectors - 用于 contract selectors - 正常使用
+			targetSender(address newTargetedSender_)	           添加到 包含 msg.sender 集合   随机的 msg.sender 从这里面拿 
+		Setup     目标合约通过以下三个方法设置
+			1.手动添加到 targetContracts  
+			2.部署合约的时候在 setup 方法 自动把目标合约添加进去   也可以在这里 removed 掉
+		例子  
+		写一个目标合约  三个变量  俩个方法  方法1:输入amount v1和v3 累加   方法2:输入amount v2和v3 累加  都是uint256
+		测试方法  setup() 部署目标合约  俩个测试方法  invariant_A(){ assertEq(v1+v2, v3); }  invariant_B(){ assertEq(v1+v2, v1); } 
+		运行测试结果   方法1 和 方法2 跑的概率是 50%  可能会溢出导致revert 默认是 fail_on_revert = false 所以整个测试流程还会继续
+			[PASS] invariant_A() (runs: 256, calls: 3840, reverts: 1208)
+			[PASS] invariant_B() (runs: 256, calls: 3840, reverts: 1208)
+		Handler 函数  
+		  这个是为了解决一些函数执行要准备一些东西才能避免失败 比如执行 deposite前 必须有钱才行  不然会 revert  
+		  handler 就是把逻辑给包装一下  放到最前面执行 避免失败  
+		  如果没 handler 执行顺序 step1: call function    step2: Assert all invariant
+		  有了 handler   执行顺序 step1: call function in handler   step2: route calls to protocol   step3: assert all invariant 
+		  就是把之前全局无序的执行顺序  改成局部有序的去执行  乱中有细  
+		ghost variables  通过在测试类中添加全局变量 在每一个测试方法中修改  最后去对比 
+		bound(x, min, max)  确保 x在[min,max]内  确保成功执行函数   和 fail_on_revert = false  类似   
+		例如: assets = bound(assets, 0, 1e30);  源码在 StdUtils.sol/_bound(uint256, uint256, uint256)
+		更高级的用法 用于 modifier   
+			address[] public actors;
+			address internal currentActor;
+			modifier useActor(uint256 actorIndexSeed) {
+				currentActor = actors[bound(actorIndexSeed, 0, actors.length - 1)];
+				vm.startPrank(currentActor);
+				_;
+				vm.stopPrank();
+			}
+		如果测试方法用了这个 modifier 那么会对 actorIndexSeed 做一个规定  只能在 actors 数组内  fuzzing test 不会越界
+		
+	Differential Testing
+		vm.ffi(CMDS) 执行脚本 获取结果返回 例如 cat xxx.txt  返回的就是 txt文本信息
+		例如 Merkle 树   solidity有个库叫 Murky  但其他语言写的库 如 python  JavaScript typescript  可以通过 ffi 执行脚本生成 merkle树  然后和solidity的库去做对比
+		不止是solidity和JavaScript做对比  还能其他任意的库  只要能通过脚本命令获得 
+		还能读取本地的txt文件 decode后  和任意的其他库去做对比   简单来说就是 ffi 执行脚本命令 拿到数据  和库去做对比  
+
+Deploying and Verifying 
+	一般用法
+	$ forge create --rpc-url <your_rpc_url> --private-key <your_private_key> src/MyContract.sol:MyContract
+	高阶用法  带了构造函数参数   区块链浏览器上校验源码 
+	$ forge create --rpc-url <your_rpc_url> \
+		--constructor-args "ForgeUSD" "FUSD" 18 1000000000000000000000 \
+		--private-key <your_private_key> \
+		--etherscan-api-key <your_etherscan_api_key> \
+		--verify \
+		src/MyToken.sol:MyToken
+	如果合约已经部署  可通过下面的例子去校验源码   加了 --watch 是为了查看结果 
+	$ forge verify-contract --chain-id 42 --num-of-optimizations 1000000 --watch --constructor-args \ 
+		$(cast abi-encode "constructor(string,string,uint256,uint256)" "ForgeUSD" "FUSD" 18 1000000000000000000000) \
+		--compiler-version v0.8.10+commit.fc410830 <the_contract_address> src/MyToken.sol:MyToken <your_etherscan_api_key>
+
+	Submitted contract for verification:
+					Response: `OK`
+					GUID: `a6yrbjp5prvakia6bqp5qdacczyfhkyi5j1r6qbds1js41ak1a`
+					url: https://kovan.etherscan.io//address/0x6a54…3a4c#code
+	如果没收到结果  可通过   $ forge verify-check --chain-id 42 <GUID> <your_etherscan_api_key>   去查看是否 
+							Contract successfully verified.
+		
+Gas Tracking 
+	俩种方法  reports:合约中每个函数gas消耗    snapshots: 所有测试方法的gas消耗
+	区别在于 reports 更细节  而 snapshots 生成速度更快
+	Gas Reports 
+		可在 foundry.toml 中配置 哪些合约需要生成report  
+			gas_reports = ["MyContract", "MyContractFactory"]  //俩个合约
+			gas_reports = ["*"]                                //所有合约
+			gas_reports_ignore = ["Example"]                   //忽略掉这个合约
+		forge test --gas-report 
+		也可以用过滤器 为一个 测试生成  $ forge test --match-test testBurn --gas-report 
+		
+	Gas Snapshots
+		可以对比前后优化的gas消耗 
+			$ forge snapshot
+			$ cat .gas-snapshot
+		过滤
+			指定文件名  $ forge snapshot --snap <FILE_NAME>
+			排序  --asc     --desc 
+			最大/小  --min <VALUE>   --max <VALUE>
+			一个测试合约  $ forge snapshot --match-path contracts/test/ERC721.t.sol
+		对比gas消耗   看起来 --diff 更好用  信息更多
+			$ forge snapshot --diff .gas-snapshot   执行一遍然后对比.gas-snapshot   红色表示gas不一样 
+			$ forge snapshot --check .gas-snapshot  这里会把不同的地方给打印出来 
+Debugger
+	
+	
+		
+		
+
+
+
+
 		
 ```
 
