@@ -1,5 +1,11 @@
 # Foundry 使用指南啊
 
+Foundry 包括了 三个库  forge  cast  anvil  
+	forge 用于测试  
+	cast 命令行交互工具
+	anvil  提供本地区块节点 
+	最后还有一些经典的例子  best practices
+
 
 ## 基本使用
 
@@ -268,14 +274,82 @@ Gas Tracking
 			$ forge snapshot --diff .gas-snapshot   执行一遍然后对比.gas-snapshot   红色表示gas不一样 
 			$ forge snapshot --check .gas-snapshot  这里会把不同的地方给打印出来 
 Debugger
+	$ forge debug --debug src/SomeContract.sol --sig "myFunc(uint256,string)" 123 "hello"
+	感觉没 remix 好用  
+
+
+Cast
+	命令行工具 和 主链交互 RPC calls   
+	可以 调用合约函数  发送交易   获取链上数据
+	获取 DAI token的总供应量 
+		$ cast call 0x6b175474e89094c44da98b954eedeac495271d0f "totalSupply()(uint256)" --rpc-url https://eth-mainnet.alchemyapi.io/v2/Lc7oIGYeL_QvInzI0Wiu_pOZZDEKBrdf	
+	解码数据
+		zeroonechange@3bet:~/foundry/hello_foundry$ cast 4byte-decode 0x1F1F897F676d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e7
+		1) "fulfillRandomness(bytes32,uint256)"
+		0x676d000000000000000000000000000000000000000000000000000000000000
+		999		
+
+
+Anvil
+	本地网络节点 
+
+Chisel 
+	就和 ethernaut 那里面的 控制台一样   输入后 立马返回输出  
+
+配置 foundry.toml
+
+持续集成 
+
+VSCode 集成
+	remappings
+	dependencies
+	formatter
+	solc version
+
+shell 自动补全
+	zsh
+	fish
+	bash
+
+静态分析
+	slither 
+	mythril
+
+和 hardhat 集成
 	
-	
-		
-		
+Best Practices
+	合约部分
+		1.不要导入整个文件  而是里面具体的合约名字 import {MyContract} from "src/MyContract.sol"   而不是 import "src/MyContract.sol"
+		2.最开始导入 forge-std/  然后是 test/  script/ 最后是 src/ 
+		3.导入 合约名字 最好是按照名字顺序来  例如 import {bar, foo} from "src/MyContract.sol"  而不是 foo 在 bar 的前面 
+		4.权衡全路径和相对路径  
+		5.复制库时 配置中使用 ignore=[] 避免 格式化文件 
+		6.使用 // forgefmt: disable-* 命令 忽略行 片段  会看起来更好
+	测试部分
+		1.对于测试文件 最好是 XXX.t.sol   脚本文件 XXX.t.sol 
+		2.不要在 setup 函数中 添加 assert 
+		3.单元测试  俩种方法组织测试   1) 把测试合约当作一个专有功能的整体 例如  contract Add 里面全是 add 方法的测试  2).传统的 针对一个合约全功能
+		4.测试方法 和 合约的函数 顺序应该是一致  
+		5.命名 test_Description    testFuzz_Description    test_Revert[If|When]_Condition   testFork_Description   testForkFuzz_Revert[If|When]_Condition 
+		6.测试时候添加更多的反馈信息
+	Fork 测试部分 
+		1.fork 测试 第一次很慢 需要和RPC交互 大约7分钟  后面就很快  因为缓存下来了 
+		2.fuzz 测试容易超过 RPC的每日最大请求数   最好是用 multicall  本地node 
+		3.使用 fork 测试时  不要用 --fork-url 最好写在配置文件里面 
+	测试不常规方法
+		internal 函数  最好是再写一个合约类去继承  暴露出来  exposed_xxx()
+		private 函数   目前没办法
+	生成文档   forge doc 
 
+	使用 Solmate 偷取 NFT 
 
+	在Docker上使用Foundry
 
+	测试EIP-712签名
 
+	solidity脚本编写
+
+	使用Cast和Anvil从主网上fork
 		
 ```
 
