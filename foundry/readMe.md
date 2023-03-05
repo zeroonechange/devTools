@@ -1,10 +1,58 @@
 # Foundry 使用指南啊
 
+大纲
+### 命令大全
+### 基本使用
+### 安装
+
 Foundry 包括了 三个库  forge  cast  anvil  
 	forge 用于测试  
 	cast 命令行交互工具
 	anvil  提供本地区块节点 
 	最后还有一些经典的例子  best practices
+
+## 命令大全
+```ssh
+命令大全:
+General Commands
+	forge help 			Display help information about Forge.
+	forge completions 	Generate shell autocompletions for Forge.  自动补全
+
+Project Commands
+	forge init 		Create a new Forge project.
+	forge install 	Install one or multiple dependencies.
+	forge update 	Update one or multiple dependencies.
+	forge remove 	Remove one or multiple dependencies.
+	forge config 	Display the current config.
+	forge remappings 	Get the automatically inferred remappings for this project.
+	forge tree 			Display a tree visualization of the project's dependency graph.
+	forge geiger     Detects usage of unsafe cheat codes in a foundry project and its dependencies. 查看哪些地方用了作弊码
+
+Build Commands
+	forge build 		Build the project's smart contracts.
+	forge clean 		Remove the build artifacts and cache directories.
+	forge inspect 		Get specialized information about a smart contract.  比如abi  bytecode  assembly  method   gas  storagelayout doc  metadata  ...
+
+Test Commands
+	forge test 		 Run the project's tests.
+	forge snapshot 	 Create a snapshot of each test's gas usage.
+
+Deploy Commands
+	forge create			Deploy a smart contract.
+	forge verify-contract	Verify smart contracts on Etherscan.
+	forge verify-check 		Check verification status on Etherscan.
+	forge flatten			Flatten a source file and all of its imports into one file.  把多个 sol 文件 合并到一个文件里面去
+
+Utility Commands
+	forge debug				Debug a single smart contract as a script.
+	forge bind				Generate Rust bindings for smart contracts.
+	forge cache				Manage the Foundry cache.
+	forge cache clean		Cleans cached data from ~/.foundry.
+	forge cache ls			Shows cached data from ~/.foundry.
+	forge script			Run a smart contract as a script, building transactions that can be sent onchain.
+	forge upload-selectors	Uploads abi of given contract to https://sig.eth.samczsun.com function selector database.
+	forge doc				Generate documentation for Solidity source files.
+```
 
 
 ## 基本使用
