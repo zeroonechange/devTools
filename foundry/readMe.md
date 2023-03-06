@@ -11,7 +11,7 @@ Foundry 包括了 三个库  forge  cast  anvil
 	anvil  提供本地区块节点 
 	最后还有一些经典的例子  best practices
 
-## 命令大全
+### 命令大全
 ```ssh
 命令大全:
 General Commands
@@ -55,7 +55,7 @@ Utility Commands
 ```
 
 
-## 基本使用
+### 基本使用
 
 ```ssh
 
@@ -104,7 +104,7 @@ Utility Commands
 
 ------------------------------
 Forge 
-	tests, builds, and deploys your smart contracts.
+	tests, builds, and deploys your smart contracts
 测试
 	所有测试都是由 solidity 写的 不是 ethers.js 
 	都放在/test 目录下  文件形式 xx.t.sol
@@ -175,7 +175,7 @@ cheatcodes
 	一个函数的 gas usage 可能 和子函数的 gas usage 对不上 那是因为有额外的操作  forge尽可能的做到 实际不可能
 Fork Testing
 	俩种模式  
-	Forking Mode
+	Forking Mode  分叉模式  用一个单独的分叉进行所有测试
 		在一个fork环境上跑所有的测试   forge test --fork-url <your_rpc_url>
 		下面的信息就是fork时候带来的
 			block_number
@@ -194,7 +194,7 @@ Fork Testing
 			或 foundry.toml 文件 配置  no_storage_caching and rpc_storage_caching 
 		trace 优化: 把区块链浏览器的  API key 传进去即可   这个东西可以设置为环境变量 
 			forge test --fork-url <your_rpc_url> --etherscan-api-key <your_etherscan_api_key>   
-	Forking Cheatcodes
+	Forking Cheatcodes    分叉作弊码模式 
 		每个测试函数都是独立fork EVM环境    每个测试的 state 都是在 setup 后的复制 
 		可以使用 createFork 创建 fork     都带有 uint256 的  forkId  在创建的时候初始化
 		选择环境: selectFork(forkId)
@@ -354,11 +354,6 @@ VSCode 集成
 	formatter
 	solc version
 
-shell 自动补全
-	zsh
-	fish
-	bash
-
 静态分析
 	slither 
 	mythril
@@ -389,21 +384,18 @@ Best Practices
 		private 函数   目前没办法
 	生成文档   forge doc 
 
+
 	使用 Solmate 偷取 NFT 
-
 	在Docker上使用Foundry
-
 	测试EIP-712签名
-
 	solidity脚本编写
-
 	使用Cast和Anvil从主网上fork
 		
 ```
 
 
 
-## 安装
+### 安装
 ```ssh
 windows 用  WSL   
 下个WSL Ubuntu  

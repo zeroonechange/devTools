@@ -1,17 +1,22 @@
 # Cast 使用指南啊
 
+### 基本使用
+### 自己理解
+### 命令大全
+
 https://learnblockchain.cn/docs/foundry/i18n/zh/index.html
 https://book.getfoundry.sh/
 https://github.com/foundry-rs/foundry/tree/master/config
 
 
+### 基本使用
 ```ssh
 
-https://eth-mainnet.g.alchemy.com/v2/qXFbrurfVJ5Le9N3T3HwEi8Wc06v0Ud3
-https://eth-goerli.g.alchemy.com/v2/ybl4NUkj7Q4_odQ1NWNL2ZyYCFcOMSd5
-private key: a028b80f557f2ff8edd2b39fe749b21c10669d78381df8c6e2f2afc362efa1ee
-account: 0x5E46077F3DD9462D9F559FF38F76d54F762e79fF 
-
+全局参数:
+	主网节点: https://eth-mainnet.g.alchemy.com/v2/qXFbrurfVJ5Le9N3T3HwEi8Wc06v0Ud3
+	测试网节点: https://eth-goerli.g.alchemy.com/v2/ybl4NUkj7Q4_odQ1NWNL2ZyYCFcOMSd5
+	private key: a028b80f557f2ff8edd2b39fe749b21c10669d78381df8c6e2f2afc362efa1ee
+	account: 0x5E46077F3DD9462D9F559FF38F76d54F762e79fF 
 
 Wallet Commands:
 	创建一个新的随机密钥对
@@ -21,7 +26,7 @@ Wallet Commands:
 		cast wallet address --keystore keystore.json
 	签署消息
 		cast wallet sign --private-key a028b80f557f2ff8edd2b39fe749b21c10669d78381df8c6e2f2afc362efa1ee  "hello"
-	生成一个虚构的地址
+	生成一个好看的地址 - 靓号
 		创建一个以 dead 开头的新密钥对	cast wallet vanity --starts-with dead
 		创建一个以 beef 结尾的新密钥对	cast wallet vanity --ends-with beef
 	验证一个信息的签名
@@ -109,8 +114,11 @@ Conversion Commands:
 	
 	
 ABI Commands:
-	cast abi-encode "someFunc(address,uint256)" 0x39DBfDD63FD491A228A5b601e0662a4014540347 1 对给定的函数参数进行 ABI 编码，不包括选择器
-	cast 4byte 0x8cc5ce99   获取指定选择器的函数签名   rewardController()
+	对给定的函数参数进行 ABI 编码，不包括选择器
+	cast abi-encode "someFunc(address,uint256)" 0x39DBfDD63FD491A228A5b601e0662a4014540347 1 
+	
+	获取指定选择器的函数签名   rewardController()
+	cast 4byte 0x8cc5ce99   
 	
 	对 ABI 编码的 calldata 进行解码
 	$ cast 4byte-decode 0xa9059cbb000000000000000000000000e78388b4ce79068e89bf8aa7f218ef6b9ab0e9d00000000000000000000000000000000000000000000000000174b37380cea000
@@ -128,7 +136,6 @@ ABI Commands:
 		
 	重打印 Calldata
 	$ cast pretty-calldata 0xa9059cbb000000000000000000000000e78388b4ce79068e89bf8aa7f218ef6b9ab0e9d00000000000000000000000000000000000000000000000000174b37380cea000
-
 	 Possible methods:
 	 - transfer(address,uint256)
 	 ------------
@@ -157,7 +164,7 @@ ENS Commands:
 	cast resolve-name vitalik.eth --rpc-url=$ETH_RPC_URL             ENS 查询
 	cast namehash  vitalik.eth   									 计算一个名字的 ENS namehash
 	
-	
+
 Account Commands:
 	cast balance beer.eth --rpc-url=$ETH_RPC_URL	获取一个账户的余额，单位为 Wei
 	cast storage 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 0 --rpc-url=$ETH_RPC_URL 获取一个合约的存储槽的原始值
@@ -165,6 +172,7 @@ Account Commands:
 	cast nonce beer.eth --rpc-url=$ETH_RPC_URL   获取一个账户的 nonce  为啥个人账户也要有 nounce  防止重入攻击
 	cast code 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 --rpc-url=$ETH_RPC_URL  获取一个合约的字节码
 	
+
 Block Commands:
 	cast find-block 1609459200	获取最接近 2021 年新年的区块编号   后面是时间戳   1609459200=>Friday, January 1, 2021 12:00:00 AM
 	cast gas-price  --rpc-url=$ETH_RPC_URL   获取当前 GAS 价格
@@ -248,6 +256,8 @@ Transaction Commands:
 	预估交易的gas
 		cast estimate 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2   --value 0.1ether "deposit()"  --rpc-url=$ETH_RPC_URL
 		cast estimate 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 "balanceOf(address)(uint256)" 0xFAFc8F2621fCE45334d74934cCB0c942e4784631  --rpc-url=$ETH_RPC_URL
+
+
 Chain Commands:
 	$ cast chain-id --rpc-url https://eth-goerli.g.alchemy.com/v2/ybl4NUkj7Q4_odQ1NWNL2ZyYCFcOMSd5
 	5
@@ -264,7 +274,7 @@ Chain Commands:
 	
 ```
 
-
+### 自己理解
 ```ssh
 获取 链 id  名字 版本 
 交易部分  发布 收据  签名并发布  发送  调用一个合约函数   预估gas费 
@@ -279,89 +289,98 @@ ABI   解码/编码   function/calldata/event
 钱包  创建新的随机对  将私钥转换成账号地址  给信息签名  创建一个靓号  信息签名校验
 ```
 
-## 命令大全
+### 命令大全
 ```ssh
-General Commands
-	cast help     Display help information about Cast.
-	cast completions     Generate shell autocompletions for Cast.
-Chain Commands
-	cast chain-id     Get the Ethereum chain ID.
-	cast chain     Get the symbolic name of the current chain.
-	cast client     Get the current client version.
-Transaction Commands
-	cast publish     Publish a raw transaction to the network.
-	cast receipt     Get the transaction receipt for a transaction.
-	cast send     Sign and publish a transaction.
-	cast call     Perform a call on an account without publishing a transaction.
-	cast rpc      Perform a raw JSON-RPC request [aliases: rp]
-	cast tx     Get information about a transaction.
-	cast run     Runs a published transaction in a local environment and prints the trace.
-	cast estimate     Estimate the gas cost of a transaction.
-	cast access-list     Create an access list for a transaction.
-Block Commands
-	cast find-block     Get the block number closest to the provided timestamp.
-	cast gas-price     Get the current gas price.
-	cast block-number     Get the latest block number.
-	cast basefee     Get the basefee of a block.
-	cast block     Get information about a block.
-	cast age     Get the timestamp of a block.
-Account Commands
-	cast balance     Get the balance of an account in wei.
-	cast storage     Get the raw value of a contract's storage slot.
-	cast proof     Generate a storage proof for a given storage slot.
-	cast nonce     Get the nonce for an account.
-	cast code     Get the bytecode of a contract.
-ENS Commands
-	cast lookup-address     Perform an ENS reverse lookup.
-	cast resolve-name     Perform an ENS lookup.
-	cast namehash     Calculate the ENS namehash of a name.
-Etherscan Commands
-	
-ABI Commands
-	cast abi-encode     ABI encode the given function arguments, excluding the selector.
-	cast 4byte     Get the function signatures for the given selector from https://sig.eth.samczsun.com.
-	cast 4byte-decode     Decode ABI-encoded calldata using https://sig.eth.samczsun.com.
-	cast 4byte-event     Get the event signature for a given topic 0 from https://sig.eth.samczsun.com.
-	cast calldata     ABI-encode a function with arguments.
-	cast pretty-calldata     Pretty print calldata.
-	cast --abi-decode     Decode ABI-encoded input or output data.
-	cast --calldata-decode     Decode ABI-encoded input data.
-	cast upload-signature     Upload the given signatures to https://sig.eth.samczsun.com.
-Conversion Commands
-	cast --format-bytes32-string     Formats a string into bytes32 encoding.
-	cast --from-bin     Convert binary data into hex data.
-	cast --from-fix     Convert a fixed point number into an integer.
-	cast --from-utf8     Convert UTF8 to hex.
-	cast --parse-bytes32-string     Parses a string from bytes32 encoding.
-	cast --to-ascii     Convert hex data to an ASCII string.
-	cast --to-base     Convert a number of one base to another.
-	cast --to-bytes32     Right-pads hex data to 32 bytes.
-	cast --to-fix     Convert an integer into a fixed point number.
-	cast --to-hexdata     Normalize the input to lowercase, 0x-prefixed hex.
-	cast --to-int256     Convert a number to a hex-encoded int256.
-	cast --to-uint256     Convert a number to a hex-encoded uint256.
-	cast --to-unit     Convert an ETH amount into another unit (ether, gwei, wei).
-	cast --to-wei     Convert an ETH amount to wei.
-	cast shl     Perform a left shifting operation.
-	cast shr     Perform a right shifting operation.
+
+General 命令
+	cast help     		 获取 Cast 命令的帮助。
+	cast completions     生成 shell 自动补全脚本。
+
+Chain 命令
+	cast chain-id     获取 Ethereum 的链 ID。
+	cast chain     获取当前链的名称。
+	cast client     获取当前客户端的版本。
+
+Transaction 命令
+	cast publish     向网络发布一个原始交易。
+	cast receipt     获取一个交易的交易收据。
+	cast send     签署并发布一项交易。
+	cast call     在不发布交易的情况下对一个账户进行调用。
+	cast rpc     执行一个原始的 JSON-RPC 请求 [aliases: rp]
+	cast tx     获得有关交易的信息。
+	cast run     在本地环境中运行一个已发布的交易，并打印出跟踪。
+	cast estimate     估算交易的 Gas 成本。
+	cast access-list     为一个交易创建一个访问列表。
+
+Block 命令
+	cast find-block     获取与提供的时间戳最接近的区块编号。
+	cast gas-price     获取当前 Gas 价格。
+	cast block-number     获取最新的区块号。
+	cast basefee     获取一个区块的基础费用。
+	cast block     获取一个区块的信息。
+	cast age     获取一个区块的时间戳。
+
+Account 命令
+	cast balance     获取一个账户的余额，单位为 Wei。
+	cast storage     获取一个合约的存储槽的原始值。
+	cast proof     为一个给定的存储槽生成一个存储证明。
+	cast nonce     获取一个账户的 nonce。
+	cast code     获取一个合约的字节码。
+
+ENS 命令
+	cast lookup-address     进行 ENS 反向查询。
+	cast resolve-name     进行 ENS 查询。
+	cast namehash     计算一个名字的 ENS namehash。
+
+Etherscan 命令
+	cast etherscan-source     从 Etherscan 获取合约的源代码。
+
+ABI 命令
+	cast abi-encode     对给定的函数参数进行 ABI 编码，不包括选择器。
+	cast --abi-decode     解码 ABI 编码的输入或输出数据。
+	cast 4byte     从 https://sig.eth.samczsun.com 中获取指定选择器的函数签名。
+	cast 4byte-decode     使用 https://sig.eth.samczsun.com 对 ABI 编码的 calldata 进行解码。
+	cast 4byte-event     从 https://sig.eth.samczsun.com 中获取 topic 0 的事件签名。
+	cast calldata     ABI 编码一个带参数的函数。
+	cast --calldata-decode     解码 ABI 编码的输入数据。
+	cast pretty-calldata     漂亮地打印 Calldata。
+	cast upload-signature     将指定的签名上传到 https://sig.eth.samczsun.com.
+
+Conversion 命令
+	cast --format-bytes32-string     将一个字符串转换成 bytes32 编码。
+	cast --from-bin     将二进制数据转换为十六进制数据。
+	cast --from-fix     将一个定点数转换成一个整数。
+	cast --from-utf8     将 UTF8 文本转换为十六进制。
+	cast --parse-bytes32-string     从 bytes32 编码中解析出一个字符串。
+	cast --to-ascii     将十六进制数据转换为ASCII字符串。
+	cast --to-base     将一个进制底数转换为其它底数。
+	cast --to-bytes32     右移十六进制数据至 32 字节。
+	cast --to-fix     将一个整数转换成一个定点数。
+	cast --to-hexdata     将输入规范化为小写，0x- 前缀的十六进制。
+	cast --to-int256     将一个数字转换为十六进制编码的 int256。
+	cast --to-uint256     将一个数字转换成十六进制编码的 uint256。
+	cast --to-unit     将一个 eth 单位转换为另一个单位。 (ether, gwei, wei).
+	cast --to-wei     将 eth 金额转换为 wei 单位。
+	cast shl     进行左移操作。
+	cast shr     进行右移操作。
+
 Utility Commands
-	cast sig     Get the selector for a function.
-	cast sig-event     Generate event signatures from event string.
-	cast keccak     Hash arbitrary data using keccak-256.
-	cast compute-address     Compute the contract address from a given nonce and deployer address.
-	cast create2      Generate a deterministic contract address using CREATE2
-	cast interface     Generate a Solidity interface from a given ABI.
-	cast index     Compute the storage slot for an entry in a mapping.
-	cast --concat-hex     Concatenate hex strings.
-	cast --max-int     Get the maximum i256 value.
-	cast --min-int     Get the minimum i256 value.
-	cast --max-uint     Get the maximum u256 value.
-	cast --to-checksum-address     Convert an address to a checksummed format (EIP-55).
+	cast sig     获取一个函数的选择器。
+	cast keccak     使用 keccak-256 对任意数据进行哈希。
+	cast compute-address     从给定的 nonce 和部署者地址计算合约地址。
+	cast interface     从一个给定的 ABI 生成一个 Solidity 接口。
+	cast index     计算集合中条目的存储插槽位置。
+	cast --concat-hex     串接十六进制字符串。
+	cast --max-int     获取 int256 最大值。
+	cast --min-int     获取 int256 最小值。
+	cast --max-uint     获取 uint256 最大值。
+	cast --to-checksum-address     将一个地址转换为校验过的格式 (EIP-55).
+
 Wallet Commands
-	cast wallet     Wallet management utilities.
-	cast wallet new     Create a new random keypair.
-	cast wallet address     Convert a private key to an address.
-	cast wallet sign     Sign a message.
-	cast wallet vanity     Generate a vanity address.
-	cast wallet verify     Verify the signature of a message.
+	cast wallet     钱包管理实用工具。
+	cast wallet new     创建一个新的随机密钥对。
+	cast wallet address     将一个私钥转换为一个地址。
+	cast wallet sign     签署消息。
+	cast wallet vanity     生成一个虚构的地址。
+	cast wallet verify     验证一个信息的签名。
 ```
