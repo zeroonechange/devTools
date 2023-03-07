@@ -12,7 +12,7 @@ Foundry 包括了 三个库  forge  cast  anvil
 	最后还有一些经典的例子  best practices
 
 ### 命令大全
-```ssh
+```c
 命令大全:
 General Commands
 	forge help 			Display help information about Forge.
@@ -57,7 +57,7 @@ Utility Commands
 
 ### 基本使用
 
-```ssh
+```c
 
 创建新的项目
 	$ forge init hello_foundry
@@ -396,7 +396,7 @@ Best Practices
 
 
 ### 安装
-```ssh
+```c
 windows 用  WSL   
 下个WSL Ubuntu  
         wsl -l -v 

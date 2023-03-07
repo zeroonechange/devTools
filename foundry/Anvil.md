@@ -1,5 +1,6 @@
 # Anvil 使用指南啊
- 
+
+### 高阶使用
 ### 基本使用
 ### 命令帮助
 
@@ -14,8 +15,47 @@
 https://book.getfoundry.sh/reference/anvil/
 
 
+### 高阶使用
+```c
+anvil_impersonateAccount   冒充账号
+anvil_stopImpersonatingAccount 
+anvil_getAutomine          是否自动挖矿
+anvil_mine
+anvil_dropTransaction      
+anvil_reset
+anvil_setRpcUrl
+anvil_setBalance
+anvil_setCode
+anvil_setNonce
+anvil_setStorageAt
+anvil_setCoinbase
+anvil_setLoggingEnabled
+anvil_setMinGasPrice
+anvil_setNextBlockBaseFeePerGas
+anvil_dumpState 
+anvil_loadState 
+anvil_nodeInfo 
+
+evm_setAutomine
+evm_setIntervalMining
+evm_snapshot
+evm_revert
+evm_increaseTime
+evm_setNextBlockTimestamp
+anvil_setBlockTimestampInterval
+evm_setBlockGasLimit
+evm_mine
+anvil_enableTraces
+eth_sendUnsignedTransaction
+txpool_status
+txpool_inspect
+txpool_content
+
+```
+
+
 ### 基本使用
-```ssh
+```c
 $ anvil
                              _   _
                             (_) | |
@@ -81,7 +121,7 @@ Listening on 127.0.0.1:8545
 
 
 ### 命令帮助
-```ssh
+```c
 命令帮助   参数挺多的  
 	$ anvil -h
 	Commands:

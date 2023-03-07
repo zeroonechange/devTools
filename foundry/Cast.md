@@ -10,7 +10,7 @@ https://github.com/foundry-rs/foundry/tree/master/config
 
 
 ### 基本使用
-```ssh
+```c
 
 全局参数:
 	主网节点: https://eth-mainnet.g.alchemy.com/v2/qXFbrurfVJ5Le9N3T3HwEi8Wc06v0Ud3
@@ -275,7 +275,7 @@ Chain Commands:
 ```
 
 ### 自己理解
-```ssh
+```c
 获取 链 id  名字 版本 
 交易部分  发布 收据  签名并发布  发送  调用一个合约函数   预估gas费 
 区块链  根据时间戳找到区块号码  当前gas价格，区块号，basefee，区块信息，时间戳 
@@ -290,7 +290,7 @@ ABI   解码/编码   function/calldata/event
 ```
 
 ### 命令大全
-```ssh
+```c
 
 General 命令
 	cast help     		 获取 Cast 命令的帮助。
