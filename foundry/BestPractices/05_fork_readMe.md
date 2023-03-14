@@ -15,3 +15,4 @@ cast call $DAI "balanceOf(address)(uint256)" $LUCKY_USER
 
 这个是fork主网  然后冒充真实地址  最后一系列操作  
 ```
+
